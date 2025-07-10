@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Neural Net Predictor</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f7f7f7;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      margin: 5px 0;
+    }
+    #result {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Neural Network Predictor</h1>
+  <p>Enter a number to predict its output:</p>
+  <input type="number" id="inputVal" placeholder="e.g. 37">
+  <button onclick="predict()">Predict</button>
+  <p id="result"></p>
+
+  <script>
+    // Trained weights
+    const w1 = [[1.3716800212860107, -1.9593379497528076, 0.246090367436409, 0.3440774381160736]];
+    const b1 = [0.7195854187011719, -0.22856050729751587, -1.579392433166504, -2.946007490158081];
+    const w2 = [[1.6010831594467163], [-0.4566577076911926], [-1.3700610399246216], [-2.731182098388672]];
+    const b2 = [2.1763367652893066];
+
+    function relu(arr) {
+      return arr.map(x => Math.max(0, x));
+    }
+
+    function dotProduct(a, b) {
+      const result = [];
+      for (let i = 0; i < b[0].length; i++) {
+        let sum = 0;
+        for (let j = 0; j < a[0].length; j++) {
+          sum += a[0][j] * b[j][i];
+        }
+        result.push(sum);
+      }
+      return result;
+    }
+
+    function addBias(vec, bias) {
+      return vec.map((v, i) => v + bias[i]);
+    }
+
+    function predict() {
+      const inputVal = parseFloat(document.getElementById("inputVal").value);
+      if (isNaN(inputVal)) {
+        document.getElementById("result").innerText = "Please enter a valid number.";
+        return;
+      }
+
+      const input = [[inputVal]];
+      const hidden_raw = addBias(dotProduct(input, w1), b1);
+      const hidden = relu(hidden_raw);
+      const output_raw = addBias(dotProduct([hidden], w2), b2);
+      const prediction = Math.round(output_raw[0]);
+
+      document.getElementById("result").innerText = `Prediction: ${prediction}`;
+    }
+  </script>
+</body>
+</html>
